@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Database.db'
 app.config['SECRET_KEY'] = 'GarfieldIsHandsome'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -19,11 +19,9 @@ class Blog(db.Model):
     updated_on = db.Column(db.Integer, nullable=False)
 
 
-
-
-@app.route('/', methods=['GET','POST']) ## specify route with methods
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return "Hello"
+    return render_template("views/index.html")
 
 
 if __name__ == "__main__":
