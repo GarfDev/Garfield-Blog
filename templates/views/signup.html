@@ -1,0 +1,26 @@
+{% extends './Base.html' %}
+
+
+{% block content %}
+<div style="height:50vw; background-color: #ffa057;" class="container-fluid d-flex text-center flex-column justify-content-center align-items-center">
+    <form style="width:20vw" class="form-signin p-3 m-3" method="POST">
+      <img class="mb-4" src="https://static.wixstatic.com/media/2cd43b_384785461d1d4da7ab611e226406d90d~mv2.png?dn=Garfield%20%20(25).png" alt="" width="142" height="122">
+      <h1 class="h3 mb-3 font-weight-normal text-light">Please sign up</h1>
+
+      <label for="inputfirstname" class="sr-only">First name</label>
+      <input style="margin-bottom:10px;" name="firstname" id="inputfirstname" class="form-control" placeholder="First name" required autofocus>
+
+      <label for="inputlastname" class="sr-only">Email address</label>
+      <input style="margin-bottom:10px;" name="lastname" id="inputlastname" class="form-control" placeholder="Last name" required autofocus>
+
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input style="margin-bottom:10px;" name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+
+      <label for="inputPassword" class="sr-only">Email address</label>
+      <input style="margin-bottom:10px;" name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required autofocus>
+
+      <button class="btn btn-lg btn-primary btn-block" style="background-color:#ff8605;" type="submit">Sign up</button>
+      <p class="mt-5 mb-3 text-light">&copy; 2017-2018</p>
+    </form>
+</div>
+{% endblock %}
