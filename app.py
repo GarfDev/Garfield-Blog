@@ -1,17 +1,33 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, current_user
+from flask_wtf import FlaskForm, RecaptchaField
+from wtforms import StringField
+from wtforms.validators import DataRequired
 from passlib.context import CryptContext
 import time
 
 
 ### DEFAULT_ENVIROMENT_SETTING_UP
+class MyForm(FlaskForm):
+    recaptcha = RecaptchaField()
+
+## FLASK_WTF_SETTING_UP
 ## FLASK_SETTING_UP
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Database.db'
 app.config['SECRET_KEY'] = 'GarfieldIsHandsome'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['RECAPTCHA_PUBLIC_KEY'] = "6LeiQsIUAAAAAC6CBe8ooH-dGTQbHrB0XEWjFeSz"
+app.config['RECAPTCHA_PRIVATE_KEY'] = "6LeiQsIUAAAAAMXsKvlwUCy5VfrYUcayO5THXX6j"
 db = SQLAlchemy(app)
+
+## FLASK_LOGIN_SETTING_UP
+
+login_manager = LoginManager(app)
+
+
 ## OTHER_SETTING_UP
 pwd_context = CryptContext(
         schemes=["pbkdf2_sha256"],
@@ -27,7 +43,7 @@ class Blog(db.Model):
     created_on = db.Column(db.Integer, nullable=False)
     updated_on = db.Column(db.Integer, nullable=False)
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(200), nullable=False)
     last_name = db.Column(db.String(200), nullable=False)
@@ -51,6 +67,12 @@ def encrypt_password(password):
 
 
 ## FLASK ROUTES
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     return render_template("views/index.html")
@@ -61,12 +83,17 @@ def login():
         result = User.query.filter(User.email == request.form['email']).first()
         if result:
             if result.check_encrypted_password(encrypt_password(request.form['password'])):
-                flash("Huray, you are successful logged in!")
+                login_user(result)
+                flash("Success!")
             else:
                 flash("Bad password, please try again!")
         else:
-            flash("Cannot found this email address on our database, feel free to bruteforce though this login form")
-    return render_template("views/login.html")
+            flash("Email address not exist!")
+    elif request.method == "GET":
+        if not current_user.is_authenticated:
+            return render_template("views/login.html", form=MyForm())
+        else:
+            return redirect(url_for("home"))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -84,14 +111,17 @@ def signup():
                 db.session.add(newUser)
             except:
                 db.session.roll_back()
-                flash("Something wrong with your input, please check again!")
+                flash("Bad input, please try again!")
                 return redirect(url_for('signup'))
             else:
                 db.session.commit()
-                flash('You were successfully registed, please sign-in here!')
+                flash('Successful registed!')
                 return redirect(url_for('login'))
         else:
             flash("Areally have account on this email.")
+    elif request.method == "GET":
+        if current_user.is_authenticated:
+            return redirect(url_for('home'))
     return render_template("views/signup.html")
 
 

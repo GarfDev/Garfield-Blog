@@ -8,11 +8,11 @@
 <body>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes>
     {% for message in messages %}
-      <li>{{ message }}</li>
+        <div class="p-3 d-flex justify-content-center alert alert-warning alert-dismissible fade show sticky-top" style="position:absolute; width: calc(100% / 4);left: calc( 50vw - (100% / 8) ); top: 3%;" role="alert">
+            <strong class="text-center" >{{ message }}</strong>
+        </div>
     {% endfor %}
-    </ul>
   {% endif %}
 {% endwith %}
 {% block content %}
